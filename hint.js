@@ -9,7 +9,8 @@ console.log(secretBase64);
 
 async function fetchText() {
   let response = await fetch(
-    "https://semantle.novalis.org/nearby_1k/" + secretBase64
+    "https://semantle.novalis.org/nearby_1k/" + secretBase64,{mode: "no-cors",
+  }
   );
 
   console.log(response.status); // 200
