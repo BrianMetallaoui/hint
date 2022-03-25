@@ -1,3 +1,78 @@
 <script src="secretWords.js"></script>
-<script src="hint.js"></script>
 <div id="app"></div>
+<!-- <iframe
+  id="iframe"
+  src="https://semantle.novalis.org/nearby_1k/Y29vcGVyYXRl?javascript:alert('Hello World')"
+  onload="test()"
+></iframe> -->
+
+<script type="text/javascript">
+  function test() {
+    var iframe = document.getElementById("iframe");
+    var win = iframe.contentWindow; // Can get window
+    var doc = win.document; // Cannot get document object of iframe
+    var name = win.name; // Cannot get name property
+  }
+
+  const now = Date.now();
+  const today = Math.floor(now / 86400000);
+  const initialDay = 19021;
+  const puzzleNumber = (today - initialDay) % secretWords.length;
+  secret = secretWords[puzzleNumber].toLowerCase();
+  const yesterday = secretWords[puzzleNumber - 1].toLowerCase();
+  const secretBase64 = btoa(unescape(encodeURIComponent(secret)));
+  console.log(secretBase64);
+
+  function display(str) {
+    var doc = document.getElementById("app");
+
+    const words = str.split("<td> 1</td>");
+
+    console.log(words);
+    const word = words[1].split("</tr>");
+    let htmlDoc = stringToHTML(word[0]);
+
+    doc.append(htmlDoc);
+  }
+
+  var stringToHTML = function (str) {
+    var parser = new DOMParser();
+    var doc = parser.parseFromString(str, "text/html");
+    return doc.body;
+  };
+
+  //fetchText();
+
+  var cors_api_url = "https://cors-anywhere.herokuapp.com/";
+  function doCORSRequest(options, printResult) {
+    var x = new XMLHttpRequest();
+    x.open(options.method, cors_api_url + options.url);
+    x.onload = x.onerror = function () {
+      printResult(
+        options.method +
+          " " +
+          options.url +
+          "\n" +
+          x.status +
+          " " +
+          x.statusText +
+          "\n\n" +
+          (x.responseText || "")
+      );
+    };
+    if (/^POST/i.test(options.method)) {
+      x.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    }
+    x.send(options.data);
+  }
+
+  doCORSRequest(
+    {
+      method: this.id === "post" ? "POST" : "GET",
+      url: "https://semantle.novalis.org/nearby_1k/" + secretBase64,
+    },
+    function printResult(result) {
+      display(result);
+    }
+  );
+</script>
